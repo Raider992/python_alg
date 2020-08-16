@@ -12,5 +12,24 @@
 (в частности по перегрузке методов)
 """
 
-from _collections import defaultdict
+from collections import defaultdict
+from functools import reduce
 
+def hex_calc():
+    nums = defaultdict(list)
+    for d in range(2):
+        num = input(f"Введите {d+1}е шестнадцатиричное число: ")
+        nums[f"{d+1}"] = list(num)
+    print(nums)
+
+    summ = sum([int(''.join(i), 16) for i in nums.values()])
+    print('Сумма: ', list('%X' % summ))
+
+    mult = reduce(lambda a,b: a * b, [int(''.join(i), 16) for i in nums.values()])
+    print('Произведение: ', list('%X' % mult))
+
+hex_calc()
+
+# Прошу прощения за поздний коммит второго задания. Пытался сделать свой код,
+# с более пошаговым доставанием из defaultdict'а чисел, но код не заработал,
+# в итоге взял более простой и быстрый вариант из разбора дз.
