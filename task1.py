@@ -12,3 +12,96 @@
 Подсказка: обратите внимание, сортируем не по возрастанию, как в примере,
 а по убыванию
 """
+import timeit
+from random import randint
+import copy
+
+
+orig_list = [randint(-100,100) for _ in range(20)]
+orig_list2 = copy.deepcopy(orig_list) # Глубокое копирование, чтобы не сортировать
+                                      # один и тот же список
+
+orig_list_large = [randint(-100,100) for _ in range(5000)]
+orig_list_large2 = copy.deepcopy(orig_list_large) # Глубокое копирование, чтобы не сортировать
+                                                  # один и тот же список
+
+print(orig_list)
+print(orig_list2, '\n')
+
+def reverse_bubble(li):
+    lst = copy.copy(li)
+    for i in range(len(lst)):
+        for j in range(len(lst) - 1, 0, -1):
+            if lst[j] > lst[j-1]:
+                lst[j], lst[j-1] = lst[j-1], lst[j]
+    return lst
+
+# Для оптимизации создаём счётчик, который отсчитывает количество перестановок элементов
+# местами. Изначально он равен 0, на каждой перестановке добавляем единицу. Если в конце
+# прохода по списку счётчик по-прежнему 0, значит, перестановок не потребовалось,
+# следовательно список отсортирован, и можно прекращать работу.
+
+def reverse_bubble_opt(li):
+    lst = copy.copy(li)
+    for i in range(len(lst)):
+        exit_counter = 1
+        for j in range(len(lst) - 1, 0, -1):
+            if lst[j] > lst[j-1]:
+                lst[j], lst[j-1] = lst[j-1], lst[j]
+                if exit_counter == 1:
+                    exit_counter = 0
+        if exit_counter == 1:
+            return lst
+    return lst
+
+
+sorted_list = reverse_bubble(orig_list)
+sorted_list2 = reverse_bubble_opt(orig_list2)
+
+print(sorted_list)
+print(sorted_list2, '\n')
+
+print('Измерения времени выполнения:\n')
+
+print('Для маленьких списков:')
+
+print('Не оптимизированная: ', timeit.timeit("reverse_bubble(orig_list)", \
+    setup="from __main__ import reverse_bubble, orig_list", number=10))
+
+print('Оптимизированная: ', timeit.timeit("reverse_bubble_opt(orig_list2)", \
+    setup="from __main__ import reverse_bubble_opt, orig_list2", number=10), '\n')
+
+print('Для больших списков:')
+
+print('Не оптимизированная: ', timeit.timeit("reverse_bubble(orig_list_large)", \
+    setup="from __main__ import reverse_bubble, orig_list_large", number=10))
+
+print('Оптимизированная', timeit.timeit("reverse_bubble_opt(orig_list_large2)", \
+    setup="from __main__ import reverse_bubble_opt, orig_list_large2", number=10))
+
+'''
+[-65, -32, -67, -1, -90, -7, 57, -9, -60, -5, 67, -98, -8, -12, -13, 89, -7, 43, 31, 19]
+[-65, -32, -67, -1, -90, -7, 57, -9, -60, -5, 67, -98, -8, -12, -13, 89, -7, 43, 31, 19] 
+
+[89, 67, 57, 43, 31, 19, -1, -5, -7, -7, -8, -9, -12, -13, -32, -60, -65, -67, -90, -98]
+[89, 67, 57, 43, 31, 19, -1, -5, -7, -7, -8, -9, -12, -13, -32, -60, -65, -67, -90, -98] 
+
+Измерения времени выполнения:
+
+Для маленьких списков:
+Не оптимизированная:  0.00034910000000000496
+Оптимизированная:  0.0003305000000000044 
+
+Для больших списков:
+Не оптимизированная:  26.562717499999998
+Оптимизированная 26.819668500000002
+
+Process finished with exit code 0
+
+
+В общем, вот такой вот вышел результат. Сделал довольно много запусков кода, в подавляющем 
+большинстве случаев, на маленьком массиве мой оптимизированный код пузырька работает лучше,
+чем обычный, а на больших почти всегда хуже. Возможных вывода напрашивается два: либо
+мой код не должным образом оптимизирован, либо на большом числе элементов просто прогон 
+стандартного кода пузырька требует меньше операций, чем проверка на сортированность массива. 
+'''

@@ -13,3 +13,6 @@
 arr[m]
 from statistics import median
 """
+
+# Вариант 1 (с сортировкой массива):
+
