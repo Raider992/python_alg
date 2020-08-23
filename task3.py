@@ -14,5 +14,56 @@ arr[m]
 from statistics import median
 """
 
-# Вариант 1 (с сортировкой массива):
+from random import choice, randint
+from statistics import median
+from timeit import timeit
+from copy import copy, deepcopy
+
+
+lst = [randint(0,100) for _ in range(25)]  # Взял первое пришедшее на ум нечётное число
+
+
+# Вариант 1 (без сортировки массива):
+# За основу взял алгоритм для нахождения k-й порядковой статистики(из вики)
+#
+# Существует алгоритм для нахождения k-й порядковой статистики, основанный на алгоритме быстрой сортировки
+# и работающий за O(n) в среднем.
+# Идея алгоритма заключается в том, что массив разбивается на две части относительно случайно (равновероятно)
+# выбранного элемента — в одну часть попадают элементы, меньшие, чем выбранный, в другую — остальные (эта
+# операция выполняется за O(n), по её окончанию выбранный элемент находится в позиции j). Если в первой части
+# оказалось ровно k-1 элементов (j=k), то выбранный элемент является искомым, если j>k, то алгоритм выполняется
+# рекурсивно для первой части массива, иначе — для второй (в последнем случае для следующей итерации от k
+# отнимается j). Рекурсивные вызовы приводят к экспоненциально уменьшающемуся с каждой итерацией размеру
+# обрабатываемого массива, и по этой причине время выполнения алгоритма составляет O(n).
+
+def part(lst, v):
+    left = []
+    right = []
+    for el in lst:
+        if el < v:
+            left.append(el)
+        elif el > v:
+            right.append(el)
+    return left, [v], right
+
+def kth_stat(lst, k):
+    v = choice(lst)
+    (left, middle, right) = part(lst, v)
+    if len(left) == k:
+        return left
+    elif len(left) + 1 == k:
+        return left + middle
+    elif len(left) > k:
+        return kth_stat(left, k)
+    return left + middle + kth_stat(right, k - len(left) - len(middle))
+
+def find_median(lst):
+    n = len(lst)
+    return max(kth_stat(lst, n // 2 + 1))
+
+
+print(f'Исходный массив: {lst}')
+print(f'Медиана, найденная функцией: {find_median(lst)}')
+print(f'Медиана, найденная внутренним методом: {median(lst)} \n')
+
 

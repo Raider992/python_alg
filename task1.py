@@ -22,8 +22,7 @@ orig_list2 = copy.deepcopy(orig_list) # Глубокое копирование,
                                       # один и тот же список
 
 orig_list_large = [randint(-100,100) for _ in range(5000)]
-orig_list_large2 = copy.deepcopy(orig_list_large) # Глубокое копирование, чтобы не сортировать
-                                                  # один и тот же список
+orig_list_large2 = copy.deepcopy(orig_list_large)
 
 print(orig_list)
 print(orig_list2, '\n')
@@ -38,10 +37,6 @@ def reverse_bubble(li):
         n -= 1
     return lst
 
-# Для оптимизации создаём счётчик, который отсчитывает количество перестановок элементов
-# местами. Изначально он равен 0, на каждой перестановке добавляем единицу. Если в конце
-# прохода по списку счётчик по-прежнему 0, значит, перестановок не потребовалось,
-# следовательно список отсортирован, и можно прекращать работу.
 
 def reverse_bubble_opt(li):
     lst = copy.copy(li)
